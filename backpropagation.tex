@@ -1,0 +1,224 @@
+\documentclass{article}
+ 
+\begin{document}
+
+\title{AI Coffe Club (04/12/2019)\\ Backpropagation}
+\date{}
+
+\maketitle
+
+\begin{center}
+Last modification: \today\\
+\end{center}
+
+\noindent $x$ is the input vector.\\
+$z^l$ input sum of a neuron\\
+$a^l$ activations column-vector for the layer $l$\\
+$W^l$ weights or connections from layer $l-1$ to $l$\\
+$w_{kj}^l$ weight from neuron $j$ from layer $l-1$ to neuron $k$ from layer $l$\\
+$b^l$ neurons' biases for layer $l$\\
+$\sigma$ activation or transfer function\\
+$C(\hat{y}, y)$ the error function where $y$ is the ground truth and $\hat{y}$ is the prediction\\
+
+Three steps:
+\begin{enumerate}
+  \item Forward pass: calculate the activations of each layer.
+  \item Cost calculation: compute the value of $C(\hat{y}, y)$.
+  \item Backpropagation: updating the weights and biases of the network.
+\end{enumerate}
+
+\section{Forward Pass}
+
+The forward pass of a layer can be formalized as:
+
+\begin{equation}
+a^l = \sigma(z^l) = W^l a^{l-1} + b^l
+\end{equation}
+
+So for the first layer we take the input:
+
+\begin{equation}
+a^1 = \sigma(z^1) = W^1 x + b^1
+\end{equation}
+
+The whole network forward pass can be expressed as:
+
+\begin{equation}
+a^L = [\sigma(W^L[\dots [\sigma(W^2[\sigma(W^1x_ + b^1)])])]
+\end{equation}
+
+More specifically, the input sum $z^l_k$ of a neuron $k$ in layer $l$:
+
+\begin{equation}
+z^l_k = \sum_j w_{kj}^l a_j^{l-1} + b_k^l
+\end{equation}
+
+Then we use the transfer or activation function:
+
+\begin{equation}
+a^l_k = \sigma(z^l_k)
+\end{equation}
+
+So the input sum $z_m^{l+1}$ of a neuron $m$ in a layer $l+1$:
+
+\begin{equation}
+z_m^{l+1} = \sum_k w^{l+1}_{mk} a_k^l + b_m^l
+\end{equation}
+
+And so on ...
+
+\section{Cost Calculation}
+
+Now we have predictions but we need a way to quantitatively determine how good or bad they are: the cost function $C(\hat{y}, y)$, which is a function of the predicted values $\hat{y}$ and the ground truth $y$. Also referred as loss or just error.
+
+The goal is to find the set of weights and biases that minimize the cost function. The selection of the cost function is critical for the problem, one usual loss function is the cross-entropy:
+
+\begin{equation}
+C(\hat{y}, y) = -(y \log(\hat{y}) + (1 - y)\log(1 - \hat{y}))
+\end{equation}
+
+The cost can be computed just by iterating over all the samples of the training set and pluggint the output of the forward pass of the network ($a^L = \hat{y}$) for each one of them to the cost function.
+
+\section{Backpropagation}
+
+The goal of backpropagation is to compute the partial derivatives of the cost function w.r.t. to any weight or bias in the network. Using those partial derivatives we can update the weights and biases of the network by multiplying it by some constant $\alpha$ named learning rate.
+
+In other words, this is the gradient descent algorithm since the partial derivatives give us the direction of greatest ascent. By taking a step (whose size is determined by the learning rate) in the opposite direction we can get to the minimum (which may or may not be global):
+
+\begin{equation}
+W^l = W^l - \alpha\displaystyle\frac{\partial C}{\partial W^l}
+\end{equation}
+\begin{equation}
+b^l = b^l - \alpha\displaystyle\frac{\partial C}{\partial b^l}
+\end{equation}
+
+So the derivative of the cost w.r.t. to set of weights in layer $l$ is:
+
+\begin{equation}
+\frac{\partial C}{\partial W^l} = \frac{\partial C}{\partial z^l}\frac{\partial z^l}{\partial W^l} = \frac{\partial C}{\partial a^l}\frac{\partial a^l}{\partial z^l}\frac{\partial z^l}{\partial W^l}
+\end{equation}
+
+If we apply the chain rule, the derivative of the cost function w.r.t. to the set of weights in layer $l-1$ is:
+
+\begin{equation}
+  \frac{\partial C}{\partial W^{l-1}} = \frac{\partial C}{\partial a^l}\frac{\partial a^l}{\partial z^l}\frac{\partial z^l}{\partial a^{l-1}}\frac{\partial a^{l-1}}{\partial z^{l-1}}\frac{\partial z^{l-1}}{\partial W^{l-1}}
+\end{equation}
+
+And so on until we reach the last set of weights $w^1$. As you might have noticed, this process starts from the last layer (opposite to the forward pass which starts from the first). The same development is applied to the biases.
+
+In the end, our general rule can be expressed as:
+
+\begin{equation}
+\frac{\partial C}{\partial W^l} = \frac{\partial C}{\partial z^l}\frac{\partial z^l}{\partial w^l}
+\end{equation}
+\begin{equation}
+\frac{\partial C}{\partial b^l} = \frac{\partial C}{\partial z^l}\frac{\partial z^l}{\partial b^l}
+\end{equation}
+
+Which means that we need four fundamental partial derivatives required for backpropagation:
+
+\begin{equation}
+\frac{\partial C}{\partial z^L}, \frac{\partial C}{\partial z^l}, \frac{\partial z^l}{\partial W^l}, \frac{\partial z^l}{\partial b^l}
+\end{equation}
+
+Assume we use a sigmoid activation function for each layer:
+
+\begin{equation}
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+
+\subsection{Partial derivative of $C$ w.r.t. $z^L$}
+
+\begin{equation}
+\frac{\partial C}{\partial z^L} = \frac{\partial C}{\partial a^L}\frac{\partial a^L}{\partial z^L} = \frac{\partial C}{\partial a^L} \sigma'(z^L)~,
+\end{equation}
+
+where
+
+\begin{equation}
+\frac{\partial C}{\partial a^L} = \frac{\partial (-(y\log(a^L) + (1-y)\log(1 - a^L)))}{\partial a^L} = -(\frac{y}{a^L} - \frac{1 - y}{1 - a^L})
+\end{equation}
+
+Furthermore, the derivative of the activation function is:
+
+\begin{equation}
+\sigma'(z^L) = \sigma(z^L)(1 - \sigma(z^L)) = a^L (1-a^L)
+\end{equation}
+
+So putting it all together:
+
+\begin{equation}
+\frac{\partial C}{\partial z^L} = -(\frac{y}{a^L} - \frac{1 - y}{1 - a^L})a^L (1-a^L) = a^L - y
+\end{equation}
+
+\subsection{Partial derivative of $C$ w.r.t. $z^l$}
+
+Ideally, we would like to have the partial derivative of $C$ w.r.t. to $z^l$ in terms of the partial derivative of $C$ w.r.t. $z^{l+1}$ so that once we have $z^L$ we can compute $z^{L-1}, z^{L-2}, ...$ and so on. We can write:
+
+\begin{equation}
+\frac{\partial C}{\partial z^l} = \frac{\partial C}{\partial z^{l+1}}\frac{\partial z^{l+1}}{\partial a^l}\frac{\partial a^l}{\partial z^l}
+\end{equation}
+
+Since we have calculated first the partial derivative of $C$ w.r.t. to the last input sum $z^L$ we can calculate this derivative for every $l = L-1, L-2, ...$ by substituting the values on the equation above. However, we still need to calculate the partial derivative of $z^{l+1}$ w.r.t. $a^l$ and the partial derivative of $a^l$ w.r.t. $z^l$. Taking into account that:
+
+\begin{equation}
+z^{l+1} = W^{l+1}a^l + b^{l+1}~,
+\end{equation}
+
+we can substitute it:
+
+\begin{equation}
+\frac{\partial z^{l+1}}{\partial a^l} = \frac{\partial}{\partial a^l}(W^{l+1}a^l + b^{l+1}) = W^{l+1}
+\end{equation}
+
+and also
+
+\begin{equation}
+\frac{\partial a^l}{\partial z^l} = \sigma'(z^l)
+\end{equation}
+
+If we put everything together:
+
+\begin{equation}
+\frac{\partial C}{\partial z^l} = \frac{\partial C}{\partial z^{l+1}}W^{l+1}\sigma'(z^l)
+\end{equation}
+
+\subsection{Partial derivative of $z^l$ w.r.t. $W^l$}
+
+Taking into account that:
+
+\begin{equation}
+z^{l} = W^{l}a^{l-1} + b^{l}~,
+\end{equation}
+
+we can substitute it:
+
+\begin{equation}
+\frac{\partial z^l}{W^l} = \frac{\partial}{\partial W^l}(W^{l}a^{l-1} + b^{l}) = a^{l-1}
+\end{equation}
+
+\subsection{Partial derivative of $z^l$ w.r.t. $b^l$}
+
+Again: 
+
+\begin{equation}
+z^{l} = W^{l}a^{l-1} + b^{l}~,
+\end{equation}
+
+so:
+
+\begin{equation}
+\frac{\partial z^l}{b^l} = \frac{\partial}{\partial b^l}(W^{l}a^{l-1} + b^{l}) = 1
+\end{equation}
+
+\subsection{Putting it all together}
+
+\begin{equation}
+\frac{\partial C}{\partial W^l} = \frac{\partial C}{\partial z^l}\frac{\partial z^l}{\partial W^l} = \frac{\partial C}{\partial z^{l+1}}W^{l+1}\sigma'(z^l) a^{l-1}
+\end{equation}
+
+\begin{equation}
+\frac{\partial C}{\partial b^l} = \frac{\partial C}{\partial z^l}\frac{\partial z^l}{\partial b^l} = \frac{\partial C}{\partial z^{l+1}}W^{l+1}\sigma'(z^l)
+\end{equation}
+
+\end{document}
