@@ -1,0 +1,189 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+ 
+\begin{document}
+
+\title{AI Coffe Club (09/01/2020)\\ Activation Functions}
+\date{}
+
+\maketitle
+
+\begin{center}
+Last modification: \today\\
+\end{center}
+
+\begin{table}[!htb]
+  \centering
+  \resizebox{\linewidth}{!}{
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    Name & Function & Derivative & Range\\
+    \hline
+    Sigmoid & $\sigma(x) = \frac{1}{1 + e^{-x}}$ & $\sigma'(x) = \sigma(x)(1 - \sigma(x))$ & $(0,1)$\\
+    \hline
+    Hyperbolic Tangent & $\sigma(x) = \frac{e^{2x} -1}{e^{2x} + 1}$ & $\sigma'(x) = 1 - \sigma(x)^2$ & $(-1,1)$\\
+    \hline
+    ReLU & $\sigma(x) =
+    \begin{cases}
+      0 & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $\sigma(x) =
+    \begin{cases}
+      0 & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $[0, \infty)$\\
+    \hline
+    Leaky ReLU & $\sigma(x) =
+    \begin{cases}
+      0.01x & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $\sigma(x) =
+    \begin{cases}
+      0.01 & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $(-\infty, \infty)$\\
+    \hline
+    Parametric ReLU & $\sigma(x) =
+    \begin{cases}
+      \alpha x & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $\sigma(x) =
+    \begin{cases}
+      \alpha & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $(-\infty, \infty)$\\
+    \hline
+    ELU & $\sigma(x) =
+    \begin{cases}
+      \alpha(e^x -1) & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $\sigma(x) =
+    \begin{cases}
+      \alpha + \sigma(x) & x \leq 0\\
+      x & x > 0
+    \end{cases}$ & $(-\alpha, \infty)$\\
+    \hline
+    Softplus & $\sigma(x) = \ln(1 + e^x)$ & $\sigma'(x) = \frac{1}{1 + e^{-x}}$ & $(0, \infty)$\\
+    \hline
+    Swish & $\sigma(x) = \frac{x}{1 + e^{-\beta x}}$ & $\sigma'(x) = \beta\sigma(x) + \frac{1}{1 + e^{-\beta x}}(1 - \beta\sigma(x))$ & \\
+    \hline
+  \end{tabular}}
+\end{table}
+
+\clearpage
+
+\section{Sigmoid}
+
+\begin{equation}
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+
+\begin{equation}
+\sigma'(x) = \sigma(x)(1 - \sigma(x))
+\end{equation}
+
+\section{Hyperbolic Tangent}
+
+\begin{equation}
+\sigma(x) = tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}} = \frac{e^{2x} -1}{e^{2x} + 1}
+\end{equation}
+
+\begin{equation}
+\sigma'(x) = 1 - \sigma(x)^2
+\end{equation}
+
+\section{Rectified Linear Unit}
+
+\begin{equation}
+\sigma(x) =
+  \begin{cases}
+    0 & x \leq 0\\
+    x & x > 0
+  \end{cases}
+\end{equation}
+
+\begin{equation}
+\sigma'(x) =
+  \begin{cases}
+    0 & x \leq 0\\
+    1 & x > 0
+  \end{cases}
+\end{equation}
+
+\section{Leaky Rectified Linear Unit}
+
+\begin{equation}
+  \sigma(x) =
+    \begin{cases}
+      0.01x & x \leq 0\\
+      x & x > 0
+    \end{cases}
+  \end{equation}
+  
+  \begin{equation}
+  \sigma'(x) =
+    \begin{cases}
+      0.01 & x \leq 0\\
+      1 & x > 0
+    \end{cases}
+  \end{equation}
+
+\section{Parametric Rectified Linear Unit}
+
+\begin{equation}
+  \sigma(x) =
+    \begin{cases}
+      \alpha x & x \leq 0\\
+      x & x > 0
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+  \sigma'(x) =
+    \begin{cases}
+      \alpha & x \leq 0\\
+      1 & x > 0
+    \end{cases}
+\end{equation}
+
+\section{Exponential Linear Unit}
+
+\begin{equation}
+  \sigma(x) =
+    \begin{cases}
+      \alpha(e^x - 1) & x \leq 0\\
+      x & x > 0
+    \end{cases}
+\end{equation}
+
+\begin{equation}
+  \sigma'(x) =
+    \begin{cases}
+      \alpha + \sigma(x) & x \leq 0\\
+      1 & x > 0
+    \end{cases}
+\end{equation}
+
+\section{Softplus}
+
+\begin{equation}
+  \sigma(x) = \ln(1 + e^x)
+\end{equation}
+
+\begin{equation}
+  \sigma'(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+
+\section{Swish}
+
+\begin{equation}
+\sigma(x) = \frac{x}{1 + e^{-x}}
+\end{equation}
+
+\begin{equation}
+\sigma'(x) = x\sigma(x)
+\end{equation}
+
+\end{document}
