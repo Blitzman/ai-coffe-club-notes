@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{xcolor}
  
 \begin{document}
 
@@ -94,6 +95,7 @@ Many activation functions have been proposed to date, most of them trying to str
   \centering
   \begin{tikzpicture}
     \begin{axis}[
+      width= \linewidth,
       axis lines= middle,
       legend pos= south east,
       xmax=4,
@@ -116,6 +118,15 @@ Many activation functions have been proposed to date, most of them trying to str
 \sigma'(x) = \sigma(x)(1 - \sigma(x))
 \end{equation}
 
+\begin{itemize}
+  \item Smooth gradient.
+  \item Output values are bounded normalizing the output.
+  \item Clear activations which easily saturate to the range extremes.
+  \item \textcolor{red}{Vanishing gradients.} 
+  \item \textcolor{red}{Not zero centered outputs.}
+  \item \textcolor{red}{Computationally expensive.}
+\end{itemize}
+
 \clearpage
 
 \section{Hyperbolic Tangent}
@@ -124,6 +135,7 @@ Many activation functions have been proposed to date, most of them trying to str
   \centering
   \begin{tikzpicture}
     \begin{axis}[
+      width= \linewidth,
       axis lines= middle,
       legend pos= south east,
       xmax=4,
@@ -146,9 +158,49 @@ Many activation functions have been proposed to date, most of them trying to str
 \sigma'(x) = 1 - \sigma(x)^2
 \end{equation}
 
+\begin{itemize}
+  \item Smooth gradient.
+  \item Output values are bounded normalizing the output.
+  \item Clear activations which easily saturate to the range extremes.
+  \item Zero-centered outputs.
+  \item \textcolor{red}{Vanishing gradients.} 
+  \item \textcolor{red}{Computationally expensive.}
+\end{itemize}
+
 \clearpage
 
 \section{Rectified Linear Unit}
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width= \linewidth,
+      axis lines= middle,
+      legend pos= south east,
+      xmax=4,
+      xmin=-4,
+      ymin=-4,
+      ymax=4,
+      samples=512]
+      \addplot[blue, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0,
+          x
+        )
+      };
+      \addplot[red, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0,
+          1
+        )
+      };
+      \legend{$\sigma(x)$, $\sigma'(x)$}
+    \end{axis}
+  \end{tikzpicture}
+\end{figure}
 
 \begin{equation}
 \sigma(x) =
@@ -166,14 +218,53 @@ Many activation functions have been proposed to date, most of them trying to str
   \end{cases}
 \end{equation}
 
+\begin{itemize}
+  \item Computationally efficient.
+  \item Not affected by the vanishing gradient and converges faster.
+  \item Sparse activations.
+  \item \textcolor{red}{Unbounded output values.}
+  \item \textcolor{red}{Dying ReLU}  since it is zero for all negative values and the slope in the negative range is zero it can "die". A large gradient flowing through a ReLU can cause the weights to update in such a way that the neuron will never activate on any datapoint again. The gradient flowing through this unit will be forever zero.
+\end{itemize}
+
 \clearpage
 
 \section{Leaky Rectified Linear Unit}
 
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width= \linewidth,
+      axis lines= middle,
+      legend pos= south east,
+      xmax=4,
+      xmin=-4,
+      ymin=-4,
+      ymax=4,
+      samples=512]
+      \addplot[blue, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.1 * x,
+          x
+        )
+      };
+      \addplot[red, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.1,
+          1
+        )
+      };
+      \legend{$\sigma(x)$, $\sigma'(x)$}
+    \end{axis}
+  \end{tikzpicture}
+\end{figure}
+
 \begin{equation}
   \sigma(x) =
     \begin{cases}
-      0.01x & x \leq 0\\
+      0.1x & x \leq 0\\
       x & x > 0
     \end{cases}
 \end{equation}
@@ -181,14 +272,62 @@ Many activation functions have been proposed to date, most of them trying to str
 \begin{equation}
   \sigma'(x) =
     \begin{cases}
-      0.01 & x \leq 0\\
+      0.1 & x \leq 0\\
       1 & x > 0
     \end{cases}
 \end{equation}
 
+\begin{itemize}
+  \item Computationally efficient.
+  \item Not affected by the vanishing gradient and converges faster.
+  \item Prevents the dying ReLU problem!
+  \item Sparse activations.
+  \item \textcolor{red}{Not zero-centered.}
+  \item \textcolor{red}{Unbounded output values.}
+  \item \textcolor{red}{Inconsistent results due to inconsistent predictions for negative values.}
+\end{itemize}
+
 \clearpage
 
 \section{Parametric Rectified Linear Unit}
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width= \linewidth,
+      axis lines= middle,
+      legend pos= south east,
+      xmax=4,
+      xmin=-4,
+      ymin=-4,
+      ymax=4,
+      samples=512]
+      \addplot[blue, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.1 * x,
+          x
+        )
+      };
+      \addplot[red, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.5 * x,
+          x
+        )
+      };
+      \addplot[green, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.75 * x,
+          x
+        )
+      };
+      \legend{$\alpha=0.1$, $\alpha=0.5$, $\alpha=0.75$}
+    \end{axis}
+  \end{tikzpicture}
+\end{figure}
 
 \begin{equation}
   \sigma(x) =
@@ -206,9 +345,50 @@ Many activation functions have been proposed to date, most of them trying to str
     \end{cases}
 \end{equation}
 
+\begin{itemize}
+  \item Computationally efficient.
+  \item Not affected by the vanishing gradient and converges faster.
+  \item Prevents the dying ReLU problem!
+  \item Sparse activations.
+  \item Negative slope is learned and backpropagation is performed with the most appropriate value.
+  \item \textcolor{red}{Not zero-centered.}
+  \item \textcolor{red}{Unbounded output values.}
+\end{itemize}
+
 \clearpage
 
 \section{Exponential Linear Unit}
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width= \linewidth,
+      axis lines= middle,
+      legend pos= south east,
+      xmax=4,
+      xmin=-4,
+      ymin=-4,
+      ymax=4,
+      samples=512]
+      \addplot[blue, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.5 * (e^x -1),
+          x
+        )
+      };
+      \addplot[red, ultra thick]{
+        ifthenelse(
+          x < 0,
+          0.5 + 0.5 * (e^x -1),
+          1
+        )
+      };
+      \legend{$\sigma(x): \alpha = 0.5$, $\sigma'(x): \alpha = 0.5$}
+    \end{axis}
+  \end{tikzpicture}
+\end{figure}
 
 \begin{equation}
   \sigma(x) =
@@ -226,6 +406,17 @@ Many activation functions have been proposed to date, most of them trying to str
     \end{cases}
 \end{equation}
 
+\begin{itemize}
+  \item Computationally efficient.
+  \item Not affected by the vanishing gradient and converges faster.
+  \item Prevents the dying ReLU problem!
+  \item Sparse activations.
+  \item Negative slope is learned and backpropagation is performed with the most appropriate value.
+  \item Smooth negative slope.
+  \item \textcolor{red}{Not zero-centered.}
+  \item \textcolor{red}{Unbounded output values.}
+\end{itemize}
+
 \clearpage
 
 \section{Softplus}
@@ -234,6 +425,7 @@ Many activation functions have been proposed to date, most of them trying to str
   \centering
   \begin{tikzpicture}
     \begin{axis}[
+      width=\linewidth,
       axis lines= middle,
       legend pos= south east,
       xmax=4,
@@ -256,6 +448,12 @@ Many activation functions have been proposed to date, most of them trying to str
   \sigma'(x) = \frac{1}{1 + e^{-x}}
 \end{equation}
 
+\begin{itemize}
+  \item All the advantages of sigmoid/tanh.
+  \item No vanishing gradients.
+  \item \textcolor{red}{Computationally inefficient}.
+\end{itemize}
+
 \clearpage
 
 \section{Swish}
@@ -264,6 +462,7 @@ Many activation functions have been proposed to date, most of them trying to str
   \centering
   \begin{tikzpicture}
     \begin{axis}[
+      width=\linewidth,
       axis lines= middle,
       legend pos= south east,
       xmax=4,
@@ -285,5 +484,11 @@ Many activation functions have been proposed to date, most of them trying to str
 \begin{equation}
 \sigma'(x) = x\sigma(x)
 \end{equation}
+
+\begin{itemize}
+  \item All the advantages of sigmoid/tanh.
+  \item Similar behaviour to ReLU but smooth.
+  \item \textcolor{red}{Computationally inefficient}.
+\end{itemize}
 
 \end{document}
